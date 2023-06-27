@@ -2,7 +2,7 @@ import socket
 
 def client():
     host = socket.gethostname()
-    port = 5000
+    port = 29282
 
     client_socket = socket.socket()
     client_socket.connect((host, port))
