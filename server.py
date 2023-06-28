@@ -11,6 +11,7 @@ class Tracker:
         self.lock = threading.Lock()  # Lock para sincronização
 
     def start(self):
+        # estudar tirar a limitação de clientes no tracker
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, self.port))
         self.server.listen(5)
@@ -27,23 +28,28 @@ class Tracker:
 
     def handle_client(self, client_socket):
         client_address = client_socket.getpeername()
-        print(f"\nNova conexão: {client_address}.\n")
         self.lock.acquire()
-        self.clients.append(client_socket)
-        self.lock.release()
+        self.append_client(client_socket)
 
-        while True:
-            data = client_socket.recv(1024).decode()
-            if not data:
-                break
-            print(f"{client_address} -> " + str(data))
-            data = data[::-1]
-            client_socket.send(data.encode())
-        
-        self.lock.acquire()
-        print(f"\nCliente {client_address} desconectado.\n")
+        print(f"Nova conexão: {client_address}.")
+
+        peer_list = self.connected_peers()
+        client_socket.send(peer_list.encode())
         self.lock.release()
         client_socket.close()
+
+    def append_client(self, client_socket):
+        client_address = client_socket.getpeername()
+        client_data = f"{client_address[0]}:{client_address[1]}"
+        
+        if client_data not in self.clients:
+            self.clients.append(client_data)
+
+    def connected_peers(self):
+        client_list = ""
+        for idx, client_data in enumerate(self.clients, start=1):
+            client_list += f"{client_data}\n"
+        return client_list
 
 if __name__ == '__main__':
     tracker = Tracker()
