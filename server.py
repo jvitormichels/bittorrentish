@@ -1,5 +1,6 @@
 import socket
 import threading
+from datetime import datetime
 
 class Tracker:
     def __init__(self):
@@ -31,7 +32,7 @@ class Tracker:
         self.lock.acquire()
         self.append_client(client_socket)
 
-        print(f"Nova conexão: {client_address}.")
+        print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Connection from {client_address}")
 
         peer_list = self.connected_peers()
         client_socket.send(peer_list.encode())
@@ -46,6 +47,7 @@ class Tracker:
             self.clients.append(client_data)
 
     def connected_peers(self):
+        # estudar um join método bonitinho build-in pra transformar array em string
         client_list = ""
         for idx, client_data in enumerate(self.clients, start=1):
             client_list += f"{client_data}\n"
