@@ -11,7 +11,7 @@ class Tracker:
         self.server = None
         self.host = socket.gethostname()  # Endereço IP do Tracker
         self.port = 29282  # Porta para o Tracker ouvir as conexões
-        self.max_clients = 4  # Número máximo de clientes que podem se conectar
+        self.max_clients = 40  # Número máximo de clientes que podem se conectar
         self.lock = threading.Lock()  # Lock para sincronização
 
     def start(self):
@@ -50,13 +50,8 @@ class Tracker:
             self.last_round_client_list.append(client_data)
 
     def update_peer_list(self):
-        print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - updating list")
-        print(self.updated_client_list)
-        print(self.last_round_client_list)
         self.updated_client_list = self.last_round_client_list
         self.last_round_client_list = []
-        print(self.updated_client_list)
-        print(self.last_round_client_list)
 
     def connected_peers(self):
         # estudar um join método bonitinho build-in pra transformar array em string
