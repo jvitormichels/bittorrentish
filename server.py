@@ -1,5 +1,6 @@
 import socket
 import threading
+import json
 from datetime import datetime
 
 from RepeatedTimer import RepeatedTimer
@@ -43,11 +44,36 @@ class Tracker:
         client_socket.close()
 
     def append_client(self, client_socket):
-        client_address = client_socket.getpeername()
-        client_data = f"{client_address[0]}:{client_address[1]}"
-        
-        if client_data not in self.last_round_client_list:
-            self.last_round_client_list.append(client_data)
+        requester_ip = client_socket.getpeername()[0]
+        requester_data = client_socket.recv(1024).decode()
+        requester_data = json.loads(requester_data)
+        # print("Data from client\n" + data)
+        for client in self.last_round_client_list:
+            if client['ip'] == requester_ip:
+                client['port'] = requester_data['port']
+                client['have_pieces'] = requester_data['have_pieces']
+                client['have_all'] = requester_data['have_all']
+                return
+                
+        requester_data['ip'] = requester_ip
+        self.last_round_client_list.append(requester_data)
+
+    # def append_client_gambiarra(self, client_socket):
+    #     requester_ip = client_socket.getpeername()[0]
+    #     requester_port = client_socket.getpeername()[1]
+    #     requester_data = client_socket.recv(1024).decode()
+    #     requester_data = json.loads(requester_data)
+    #     # print("Data from client\n" + data)
+    #     for client in self.last_round_client_list:
+    #         if client['id'] == requester_port:
+    #             client['port'] = requester_data['port']
+    #             client['have_pieces'] = requester_data['have_pieces']
+    #             client['have_all'] = requester_data['have_all']
+    #             return
+                
+    #     requester_data['ip'] = requester_ip
+    #     requester_data['id'] = requester_port
+    #     self.last_round_client_list.append(requester_data)
 
     def update_peer_list(self):
         self.updated_client_list = self.last_round_client_list
