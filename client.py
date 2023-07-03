@@ -12,7 +12,7 @@ from RepeatedTimer import RepeatedTimer
 TRACKER_IP = socket.gethostname()
 TRACKER_PORT = 29283
 FILES_FOLDER = "files"
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 4096
 
 class Client:
     def __init__(self):
@@ -107,7 +107,7 @@ class Client:
 
     def listen_requests(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.listen()
+        server.listen(5)
         self.listening_port = server.getsockname()[1]
 
         while True:

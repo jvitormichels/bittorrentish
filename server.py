@@ -5,7 +5,7 @@ from datetime import datetime
 
 from RepeatedTimer import RepeatedTimer
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 4096
 
 class Tracker:
     def __init__(self):
@@ -14,11 +14,9 @@ class Tracker:
         self.server = None
         self.host = socket.gethostname()
         self.port = 29282
-        self.max_clients = 40
         self.lock = threading.Lock()
 
     def start(self):
-        # estudar tirar a limitação de clientes no tracker
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host, self.port))
         self.server.listen(5)
@@ -27,12 +25,8 @@ class Tracker:
 
         while True:
             client_socket, address = self.server.accept()
-            if len(self.updated_client_list) < self.max_clients:
-                client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
-                client_thread.start()
-            else:
-                client_socket.send("Servidor cheio. Tente novamente mais tarde.".encode())
-                client_socket.close()
+            client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
+            client_thread.start()
 
     def handle_client(self, client_socket):
         client_address = client_socket.getpeername()
