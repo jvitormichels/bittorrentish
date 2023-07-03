@@ -5,15 +5,17 @@ from datetime import datetime
 
 from RepeatedTimer import RepeatedTimer
 
+BUFFER_SIZE = 1024
+
 class Tracker:
     def __init__(self):
-        self.updated_client_list = []  # Lista de clientes conectados
+        self.updated_client_list = []
         self.last_round_client_list = []
         self.server = None
-        self.host = socket.gethostname()  # Endereço IP do Tracker
-        self.port = 29282  # Porta para o Tracker ouvir as conexões
-        self.max_clients = 40  # Número máximo de clientes que podem se conectar
-        self.lock = threading.Lock()  # Lock para sincronização
+        self.host = socket.gethostname()
+        self.port = 29282
+        self.max_clients = 40
+        self.lock = threading.Lock()
 
     def start(self):
         # estudar tirar a limitação de clientes no tracker
@@ -37,13 +39,13 @@ class Tracker:
         self.lock.acquire()
 
         requester_ip = client_socket.getpeername()[0]
-        data = client_socket.recv(1024).decode()
+        data = client_socket.recv(BUFFER_SIZE).decode()
         data = json.loads(data)
 
         if data['msg'] == 'ping':
             print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Ping from {client_address}")
             self.append_client(requester_ip, data)
-            peer_list = self.connected_peers()
+            peer_list = json.dumps(self.updated_client_list)
             client_socket.send(peer_list.encode())
         elif data['msg'] == 'file_list':
             print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - File list from {client_address}")
@@ -87,13 +89,6 @@ class Tracker:
                 merged.append(dict2)
 
         return merged
-
-    def connected_peers(self):
-        # estudar um join método bonitinho build-in pra transformar array em string
-        client_list = ""
-        for idx, client_data in enumerate(self.updated_client_list, start=1):
-            client_list += f"{client_data}\n"
-        return client_list
 
 if __name__ == '__main__':
     tracker = Tracker()
