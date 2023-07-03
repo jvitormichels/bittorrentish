@@ -28,15 +28,18 @@ class Client:
         send_file_list_timer = RepeatedTimer(20, self.send_tracker_file_list)
 
     def ping_tracker(self):
-        tracker_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tracker_socket.connect((TRACKER_IP, TRACKER_PORT))
-        data = self.get_data_to_tracker("ping")
-        tracker_socket.send(data.encode())
-        data = tracker_socket.recv(BUFFER_SIZE).decode()
-        self.peer_list = json.loads(data)
-        print(f"\n{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Received peer list from tracker")
-        for peer in self.peer_list: print(peer)
-        tracker_socket.close()
+        try:
+            tracker_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            tracker_socket.connect((TRACKER_IP, TRACKER_PORT))
+            data = self.get_data_to_tracker("ping")
+            tracker_socket.send(data.encode())
+            data = tracker_socket.recv(BUFFER_SIZE).decode()
+            self.peer_list = json.loads(data)
+            print(f"\n{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Received peer list from tracker")
+            for peer in self.peer_list: print(peer)
+            tracker_socket.close()
+        except (ConnectionRefusedError, ConnectionResetError):
+            print(f"\n{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Communication problem with tracker")
 
     def get_data_to_tracker(self, msg):
         if msg == 'ping':
@@ -57,21 +60,24 @@ class Client:
 
     def request_piece(self, filename, peer_info):
         download_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        download_socket.connect((peer_info['ip'], peer_info['port']))
-        
-        data = json.dumps({"filename": filename})
-        download_socket.send(data.encode())
+        try:
+            download_socket.connect((peer_info['ip'], peer_info['port']))
+            
+            data = json.dumps({"filename": filename})
+            download_socket.send(data.encode())
 
-        file_path = os.path.join(self.get_files_folder_path(), filename)
+            file_path = os.path.join(self.get_files_folder_path(), filename)
 
-        with open(file_path, "wb") as f:
-            while True:
-                bytes_read = download_socket.recv(BUFFER_SIZE)
-                if not bytes_read:
-                    break
-                f.write(bytes_read)
+            with open(file_path, "wb") as f:
+                while True:
+                    bytes_read = download_socket.recv(BUFFER_SIZE)
+                    if not bytes_read:
+                        break
+                    f.write(bytes_read)
 
-        download_socket.close()
+            download_socket.close()
+        except (ConnectionRefusedError, ConnectionResetError):
+            print(f"\n{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Communication problem with peer {peer_info['ip']}:{peer_info['port']}")
 
     def select_file(self):
         rank = self.rank_file_rarity(self.peer_list)
@@ -136,11 +142,13 @@ class Client:
 
     def send_tracker_file_list(self):
         data = self.get_data_to_tracker("file_list")
-
-        tracker_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tracker_socket.connect((TRACKER_IP, TRACKER_PORT))
-        tracker_socket.send(data.encode())
-        tracker_socket.close()
+        try:
+            tracker_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            tracker_socket.connect((TRACKER_IP, TRACKER_PORT))
+            tracker_socket.send(data.encode())
+            tracker_socket.close()
+        except (ConnectionRefusedError, ConnectionResetError):
+            print(f"\n{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Communication problem with tracker")
 
     def get_file_list(self):
         file_list = []
