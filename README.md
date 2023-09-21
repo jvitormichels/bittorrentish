@@ -56,6 +56,9 @@ disponibilizam ao Rastreador (Tracker).
 
 ## Tecnologias
 
+* [Python](https://www.python.org/)
 
 ## Aprenda mais
 
+* [Especificação do protocolo BitTorrent](https://wiki.theory.org/BitTorrentSpecification)
+* [Sockets em python](https://realpython.com/python-sockets/)
