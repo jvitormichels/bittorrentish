@@ -54,6 +54,11 @@ disponibilizam ao Rastreador (Tracker).
 * Caso um par se desconecte, este será retirado da lista do tracker na próxima rodada de atualização da lista.
 
 
+## Observação
+* Por hora, o projeto está configurado para funcionar com servidor e 2..N clientes rodando na mesma máquina.
+  * Para rodar a partir de máquinas diferentes, comente a linha `if client['port'] == requester_data['port']:` e descomente `if client['ip'] == requester_ip:`.
+  * O servidor foi implementado desta forma para fins de desenvolvimento, mas foi também testado na rede da faculdade com diversos computadores.
+
 ## Tecnologias
 
 * [Python](https://www.python.org/)
