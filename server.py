@@ -13,7 +13,7 @@ class Tracker:
         self.last_round_client_list = []
         self.server = None
         self.host = socket.gethostname()
-        self.port = 29282
+        self.port = 29283
         self.lock = threading.Lock()
 
     def start(self):
