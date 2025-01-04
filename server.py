@@ -1,3 +1,5 @@
+import argparse
+
 import socket
 import threading
 import json
@@ -9,6 +11,8 @@ BUFFER_SIZE = 4096
 
 class Tracker:
     def __init__(self):
+        self.set_args()
+
         self.updated_client_list = []
         self.last_round_client_list = []
         self.server = None
@@ -48,10 +52,12 @@ class Tracker:
         self.lock.release()
         client_socket.close()
 
-    def append_client(self, requester_ip, requester_data, file_list = []):
+    def append_client(self, requester_ip, requester_data, file_list=[]):
+        comparison_key = 'ip' if self.serve_remote_clients else 'port'
+        requester_key_value = requester_ip if self.serve_remote_clients else requester_data['port']
+
         for client in self.last_round_client_list:
-            # if client['ip'] == requester_ip:
-            if client['port'] == requester_data['port']:
+            if client[comparison_key] == requester_key_value:
                 client['port'] = requester_data['port']
                 if file_list:
                     client['file_list'] = file_list
@@ -83,6 +89,12 @@ class Tracker:
                 merged.append(dict2)
 
         return merged
+
+    def set_args(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--remote", action="store_true", help="Serve remote clients (compare by IP address)")
+        args = parser.parse_args()
+        self.serve_remote_clients = args.remote
 
 if __name__ == '__main__':
     tracker = Tracker()
