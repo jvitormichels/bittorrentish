@@ -61,6 +61,7 @@ disponibilizam ao Rastreador (Tracker).
   * De acordo com a presença ou ausência do parâmetro `tmux` ao rodar o script (como em `./test.sh tmux`):
     * Cria uma nova janela de terminal, instancia uma sessão de tmux e roda 1 servidor e 4 clientes, em uma organização intuitiva de painéis
     * Cria uma nova janela de terminal para o servidor e cada um dos clientes.
+    * Clique [aqui](https://github.com/tmux/tmux/wiki/Getting-Started) para saber mais sobre o tmux.
 
 ## Observação
 * Por padrão, o servidor (`server.py`) roda em modo de desenvolvimento, aceitando diversas conexões com o mesmo IP e diferenciado-os por porta, para o contexto de que o desenvolvedor está rodando o servidor e clientes em sua mesma máquina.
