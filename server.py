@@ -27,6 +27,14 @@ class Tracker:
         timer = RepeatedTimer(15, self.update_peer_list)
         print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Tracker iniciado. Aguardando conexões...")
 
+        try:
+            self.listen_for_clients()
+        except KeyboardInterrupt:
+            print("\n\nEncerrando graciosamente...")
+            timer.stop()
+            self.server.close()
+
+    def listen_for_clients(self):
         while True:
             client_socket, address = self.server.accept()
             client_thread = threading.Thread(target=self.handle_client, args=(client_socket,))
@@ -92,7 +100,7 @@ class Tracker:
 
     def set_args(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument("--remote", action="store_true", help="Serve remote clients (compare by IP address)")
+        parser.add_argument("--remote", action="store_true", help="Serve remote clients")
         args = parser.parse_args()
         self.serve_remote_clients = args.remote
 
