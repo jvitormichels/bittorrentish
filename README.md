@@ -53,11 +53,18 @@ disponibilizam ao Rastreador (Tracker).
 * Outras máquinas (sem número limite), rodam o arquivo `client.py`. Estas máquinas se conectarão ao tracker para receber a lista, e, posteriormente, a outros clientes para solicitar os pedaços do arquivo.
 * Caso um par se desconecte, este será retirado da lista do tracker na próxima rodada de atualização da lista.
 
+## Setup de testes
+* Foi implementado um script em Shell para configurar e rodar um pequeno ambiente de testes do sistema, no qual serão criados 1 servidor e 4 clientes.
+* O arquivo test.sh, portanto, cumpre as seguintes funções:
+  * Cria um diretório de testes, que está listado no .gitignore
+  * Copia os arquivos e cria cópias do `client.py`, modificando o conteúdo do mesmo de acordo com as necessidades de cada cliente.
+  * De acordo com a presença ou ausência do parâmetro `tmux` ao rodar o script (como em `./test.sh tmux`):
+    * Cria uma nova janela de terminal, instancia uma sessão de tmux e roda 1 servidor e 4 clientes, em uma organização intuitiva de painéis
+    * Cria uma nova janela de terminal para o servidor e cada um dos clientes.
 
 ## Observação
-* Por hora, o projeto está configurado para funcionar com servidor e 2..N clientes rodando na mesma máquina.
-  * Para rodar a partir de máquinas diferentes, comente a linha `if client['port'] == requester_data['port']:` e descomente `if client['ip'] == requester_ip:`.
-  * O servidor foi implementado desta forma para fins de desenvolvimento, mas foi também testado na rede da faculdade com diversos computadores.
+* Por padrão, o servidor (`server.py`) roda em modo de desenvolvimento, aceitando diversas conexões com o mesmo IP e diferenciado-os por porta, para o contexto de que o desenvolvedor está rodando o servidor e clientes em sua mesma máquina.
+* Para rodar o servidor em modo de "produção", no qual essa diferenciação é feita a partir do socket do cliente, ou seja, o conjunto IP + porta, basta subir o `server.py`, adicionando a flag `--remote` ao comando.
 
 ## Tecnologias
 
