@@ -24,7 +24,7 @@ disponibilizam ao Rastreador (Tracker).
 
 <div style="text-align: center;">
     <img src="./docs/diagram1.png" width="40%"/>
-<!--     <img src="./docs/diagram2.png" width="40%"/> -->
+    <img src="./docs/diagram2.png" width="40%"/>
 </div>
 
 
